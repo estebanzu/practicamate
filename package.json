@@ -1,0 +1,36 @@
+{
+  "name": "practicas-matematica",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Plataforma interactiva de prácticas de Álgebra con teoría en LaTeX y resolución paso a paso",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "security": "npm audit",
+    "security:fix": "npm audit fix --force"
+  },
+  "dependencies": {
+    "katex": "^0.16.11",
+    "next": "^14.2.15",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/katex": "^0.16.7",
+    "@types/node": "^20.14.0",
+    "@types/react": "^18.3.5",
+    "@types/react-dom": "^18.3.0",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^8.57.0",
+    "eslint-config-next": "^14.2.15",
+    "postcss": "^8.4.45",
+    "prettier": "^3.9.6",
+    "tailwindcss": "^3.4.10",
+    "typescript": "^5.5.4"
+  }
+}
