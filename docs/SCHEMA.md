@@ -3,6 +3,7 @@
 ## Entidades principales
 
 ### PracticeUnit
+
 ```ts
 {
   id: string;
@@ -15,6 +16,7 @@
 ```
 
 ### TheorySection
+
 ```ts
 {
   title: string;
@@ -23,11 +25,13 @@
     title: string;
     statementLatex: string;
     solutionLatex: string;
-  }[];
+  }
+  [];
 }
 ```
 
 ### Exercise
+
 ```ts
 {
   id: string;
@@ -39,6 +43,7 @@
 ```
 
 ### ExerciseOption
+
 ```ts
 {
   id: string;
@@ -49,6 +54,7 @@
 ```
 
 ### Step
+
 ```ts
 {
   stepNumber: number;
@@ -60,6 +66,7 @@
 ## Contratos de estado
 
 ### PracticeProgress
+
 ```ts
 {
   byExercise: Record<
@@ -76,6 +83,7 @@
 Storage key por práctica: `practicas-matematica:progress:v1:<practiceId>`.
 
 ## Componentes y contratos UI relevantes
+
 - `PracticeCatalog`: `{ practices: PracticeUnit[] }`.
 - `PracticeCard`: `{ practice: PracticeUnit }`.
 - `TheoryView`: `{ practice: PracticeUnit; embedded?: boolean }`.

@@ -32,6 +32,7 @@
 ```
 
 Archivos clave por responsabilidad:
+
 - `data/practices.ts`: contrato de dominio.
 - `components/ExerciseRunner.tsx`: flujo interactivo principal.
 - `lib/progress.ts`: persistencia cliente y hook.

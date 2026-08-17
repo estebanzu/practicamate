@@ -1,5 +1,6 @@
 import { practices } from '@/data/practices';
 import PracticeCatalog from '@/components/PracticeCatalog';
+import PdfDownloads from '@/components/PdfDownloads';
 
 export default function HomePage() {
   const totalExercises = practices.reduce((acc, p) => acc + p.exercises.length, 0);
@@ -25,6 +26,8 @@ export default function HomePage() {
       <section aria-label="Prácticas disponibles" className="py-6">
         <PracticeCatalog practices={practices} />
       </section>
+
+      <PdfDownloads />
     </main>
   );
 }

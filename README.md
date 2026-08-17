@@ -4,7 +4,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
 [![KaTeX](https://img.shields.io/badge/KaTeX-0.16-008080?logo=latex&logoColor=white)](https://katex.org)
-[![Static Export](https://img.shields.io/badge/export-100%25%20static-4ade80)]()
+[![Static Export](https://img.shields.io/badge/export-100%25%20static-4ade80)](<>)
 [![Vercel](https://img.shields.io/badge/Vercel-ready-000000?logo=vercel&logoColor=white)](https://vercel.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
@@ -36,15 +36,15 @@ Diseño **ultra minimalista** y **mobile-first**, 100 % estático (Next.js App R
 
 ## 🧱 Stack
 
-| Tecnología                  | Uso                                                        |
-| --------------------------- | ---------------------------------------------------------- |
-| Next.js 14 (App Router)     | Framework y rutas estáticas (SSG)                          |
-| TypeScript                  | Tipado estricto                                            |
-| Tailwind CSS                | Estilos minimalistas (paleta zinc + acento índigo)         |
-| KaTeX                       | Renderizado matemático (`$...$` inline y `$$...$$` display) |
-| localStorage                | Persistencia del progreso por dispositivo                  |
-| Prettier + ESLint           | Formato y calidad de código                                |
-| GNU Make                    | Comandos de desarrollo (`build`, `check`, `security`, …)   |
+| Tecnología              | Uso                                                         |
+| ----------------------- | ----------------------------------------------------------- |
+| Next.js 14 (App Router) | Framework y rutas estáticas (SSG)                           |
+| TypeScript              | Tipado estricto                                             |
+| Tailwind CSS            | Estilos minimalistas (paleta zinc + acento índigo)          |
+| KaTeX                   | Renderizado matemático (`$...$` inline y `$$...$$` display) |
+| localStorage            | Persistencia del progreso por dispositivo                   |
+| Prettier + ESLint       | Formato y calidad de código                                 |
+| GNU Make                | Comandos de desarrollo (`build`, `check`, `security`, …)    |
 
 ## 📁 Estructura del proyecto
 
@@ -68,7 +68,10 @@ Diseño **ultra minimalista** y **mobile-first**, 100 % estático (Next.js App R
 │   └── progress.ts             # Persistencia de progreso en localStorage
 ├── Makefile                    # Comandos: build, format, check, security, dev
 ├── next.config.mjs             # output: 'export'
-├── practica03.pdf              # Documento fuente de las prácticas
+├── public/
+│   └── pdfs/                   # PDFs descargables (base de todas las soluciones)
+│       ├── practica02.pdf
+│       └── practica03.pdf
 └── package.json
 ```
 
@@ -84,15 +87,15 @@ make dev         # http://localhost:3000
 
 ### Comandos con Make
 
-| Comando             | Descripción                                                                   |
-| ------------------- | ----------------------------------------------------------------------------- |
-| `make build`        | Compila el sitio estático en `out/`                                           |
-| `make format`       | Formatea el código con Prettier                                               |
-| `make check`        | Verifica lint, tipos y formato (`next lint` + `tsc --noEmit` + `prettier`)    |
-| `make security`     | Auditoría de dependencias (`npm audit`); falla si hay vulnerabilidades        |
-| `make security-fix` | Corrige vulnerabilidades forzando actualizaciones (`npm audit fix --force`)   |
-| `make dev`          | Servidor de desarrollo en `http://localhost:3000`                             |
-| `make deploy`       | Despliegue (pendiente de implementación)                                      |
+| Comando             | Descripción                                                                 |
+| ------------------- | --------------------------------------------------------------------------- |
+| `make build`        | Compila el sitio estático en `out/`                                         |
+| `make format`       | Formatea el código con Prettier                                             |
+| `make check`        | Verifica lint, tipos y formato (`next lint` + `tsc --noEmit` + `prettier`)  |
+| `make security`     | Auditoría de dependencias (`npm audit`); falla si hay vulnerabilidades      |
+| `make security-fix` | Corrige vulnerabilidades forzando actualizaciones (`npm audit fix --force`) |
+| `make dev`          | Servidor de desarrollo en `http://localhost:3000`                           |
+| `make deploy`       | Despliegue (pendiente de implementación)                                    |
 
 > **Nota:** `make security --fix-force` no es sintaxis válida de GNU Make (los argumentos con `--`
 > tras un target se interpretan como opciones de `make`). Usa `make security-fix`.
@@ -148,27 +151,38 @@ git push -u origin main
 Cada `git push` a `main` (o un Pull Request) dispara un _preview_ automático en Vercel. Puedes
 añadir un dominio personalizado desde **Project → Settings → Domains**.
 
+## 📄 PDFs descargables
+
+En la página de inicio (`/`) hay una sección **"📄 Soluciones y guías (PDF)"** con los documentos
+oficiales (base de todas las soluciones) descargables desde `public/pdfs/`:
+
+- `practica02.pdf` — Práctica adicional 2 (factorización: factor común, agrupación, inspección,
+  binomios y combinados).
+- `practica03.pdf` — Práctica adicional 3 (factorización, simplificación y operaciones con
+  expresiones racionales).
+
 ## 📚 Dataset incluido
 
-Las 3 prácticas provienen del documento _"Práctica adicional 3 — Noveno Nivel"_
-(Colegio Salesiano Don Bosco, Departamento de Matemática, `practica03.pdf`):
+Las prácticas interactivas provienen de los documentos _"Práctica adicional 2 y 3 — Noveno Nivel"_
+(Colegio Salesiano Don Bosco, Departamento de Matemática):
 
 1. **Factorización de Polinomios** (10 ejercicios)
 2. **Simplificación de Expresiones Racionales** (9 ejercicios)
 3. **Operaciones con Expresiones Racionales** (7 ejercicios)
 
-> **Nota:** dos expresiones del PDF tenían ambigüedades de extracción (coeficiente fraccionario y
-> un denominador sin simplificación); se transcribieron con la mejor interpretación y quedan
+> **Nota:** los PDFs oficiales son la **base de todas las soluciones** y están disponibles para
+> descargar. Dos expresiones del PDF 3 tenían ambigüedades de extracción (coeficiente fraccionario
+> y un denominador sin simplificación); se transcribieron con la mejor interpretación y quedan
 > documentadas en los comentarios de `data/practices.ts`.
 
 ## 🧪 Solución de problemas
 
-| Problema                             | Solución                                                                    |
-| ------------------------------------ | --------------------------------------------------------------------------- |
-| `npm install` falla con `EPERM`      | Ejecuta npm dentro de WSL, nunca desde PowerShell contra la ruta UNC WSL.   |
-| El progreso no se guarda             | El navegador debe permitir `localStorage` (misma pestaña/dominio).          |
-| Las fórmulas se salen de la pantalla | Las fórmulas largas ya van en contenedores `overflow-x-auto`; desliza.      |
-| `make` no encontrado                 | Instala make en WSL (`sudo apt install make`) o usa `npm run <script>`.     |
+| Problema                             | Solución                                                                  |
+| ------------------------------------ | ------------------------------------------------------------------------- |
+| `npm install` falla con `EPERM`      | Ejecuta npm dentro de WSL, nunca desde PowerShell contra la ruta UNC WSL. |
+| El progreso no se guarda             | El navegador debe permitir `localStorage` (misma pestaña/dominio).        |
+| Las fórmulas se salen de la pantalla | Las fórmulas largas ya van en contenedores `overflow-x-auto`; desliza.    |
+| `make` no encontrado                 | Instala make en WSL (`sudo apt install make`) o usa `npm run <script>`.   |
 
 ## 📄 Licencia
 
