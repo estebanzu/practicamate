@@ -53,9 +53,19 @@ export default function PracticeCatalog({ practices }: { practices: PracticeUnit
       </div>
 
       {filtered.length === 0 ? (
-        <p className="mt-10 text-center text-sm text-zinc-500">
-          No se encontraron prácticas con esos criterios.
-        </p>
+        <div className="mt-10 flex flex-col items-center gap-3 text-center">
+          <p className="text-sm text-zinc-500">No se encontraron prácticas con esos criterios.</p>
+          <button
+            type="button"
+            onClick={() => {
+              setQuery('');
+              setSubject('Todos');
+            }}
+            className="flex min-h-[48px] items-center justify-center rounded-lg border border-zinc-300 bg-white px-4 text-sm font-medium text-zinc-700 transition-all hover:bg-zinc-50 active:scale-[0.98]"
+          >
+            Limpiar filtros
+          </button>
+        </div>
       ) : (
         <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map((p) => (

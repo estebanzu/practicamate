@@ -1,4 +1,7 @@
+'use client';
+
 import katex from 'katex';
+import { useMemo } from 'react';
 
 // ---------------------------------------------------------------------------
 // Renderizado de LaTeX: cadenas con texto mixto y delimitadores $...$ y $$...$$
@@ -48,12 +51,21 @@ export function parseLatex(input: string): Segment[] {
   return segments;
 }
 
+// Caché global: evita re-renderizar con KaTeX fórmulas ya procesadas
+// (especialmente útil al re-renderizar opciones o al navegar entre ejercicios).
+const katexCache = new Map<string, string>();
+
 function renderLatex(latex: string, displayMode: boolean): string {
-  return katex.renderToString(latex, {
+  const key = `${displayMode ? 'D' : 'I'}::${latex}`;
+  const cached = katexCache.get(key);
+  if (cached !== undefined) return cached;
+  const html = katex.renderToString(latex, {
     displayMode,
     throwOnError: false,
     strict: 'ignore',
   });
+  katexCache.set(key, html);
+  return html;
 }
 
 interface LatexRendererProps {
@@ -63,7 +75,7 @@ interface LatexRendererProps {
 }
 
 export default function LatexRenderer({ content, className, inline = false }: LatexRendererProps) {
-  const segments = parseLatex(content);
+  const segments = useMemo(() => parseLatex(content), [content]);
 
   const Wrapper: any = inline ? 'span' : 'div';
   const wrapperClassName = inline

@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Exercise, ExerciseOption, PracticeUnit } from '@/data/practices';
 import { usePracticeProgress } from '@/lib/progress';
 import LatexRenderer from './LatexRenderer';
@@ -50,6 +50,8 @@ export default function ExerciseRunner({ practice }: { practice: PracticeUnit })
     return initial;
   });
   const [stepsShown, setStepsShown] = useState<Record<string, number>>({});
+  const [confirmReset, setConfirmReset] = useState(false);
+  const stepsRef = useRef<HTMLDivElement>(null);
 
   const total = practice.exercises.length;
   const exercise: Exercise = practice.exercises[current];
@@ -92,6 +94,30 @@ export default function ExerciseRunner({ practice }: { practice: PracticeUnit })
     }));
   }
 
+  function revealAllSteps() {
+    setStepsShown((prev) => ({ ...prev, [exercise.id]: exercise.steps.length }));
+  }
+
+  function revealFromHelp() {
+    if (steps === 0) revealStep();
+    requestAnimationFrame(() => {
+      stepsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+  }
+
+  function handleReset() {
+    reset();
+    setAnswers((prev) => {
+      const next: Record<string, AnswerState> = {};
+      for (const ex of practice.exercises) {
+        next[ex.id] = { selected: null, solved: false };
+      }
+      return next;
+    });
+    setStepsShown({});
+    setConfirmReset(false);
+  }
+
   function goTo(index: number) {
     setCurrent(Math.max(0, Math.min(total - 1, index)));
   }
@@ -129,10 +155,10 @@ export default function ExerciseRunner({ practice }: { practice: PracticeUnit })
             ←
           </Link>
           <div className="min-w-0 flex-1 text-center">
-            <p className="truncate text-sm font-semibold text-zinc-900">{practice.title}</p>
-            <p className="text-xs text-zinc-500">
+            <p className="truncate text-sm font-semibold text-zinc-900">
               Ejercicio {current + 1} de {total}
             </p>
+            <p className="truncate text-xs text-zinc-500">{practice.title}</p>
           </div>
           <button
             type="button"
@@ -160,7 +186,7 @@ export default function ExerciseRunner({ practice }: { practice: PracticeUnit })
           />
         </div>
         <p className="mt-1.5 text-xs text-zinc-500">
-          {solvedCount} de {total} ejercicios resueltos
+          Progreso · {solvedCount} de {total} resueltos
         </p>
       </div>
 
@@ -200,7 +226,10 @@ export default function ExerciseRunner({ practice }: { practice: PracticeUnit })
       </nav>
 
       {/* Enunciado */}
-      <article className="mt-4 rounded-lg border border-zinc-200 bg-white p-5 shadow-sm sm:p-6">
+      <article
+        key={exercise.id}
+        className="animate-enter mt-4 rounded-lg border border-zinc-200 bg-white p-5 shadow-sm sm:p-6"
+      >
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h1 className="text-sm font-medium text-zinc-500">{exercise.title}</h1>
           {statusBadge}
@@ -253,7 +282,8 @@ export default function ExerciseRunner({ practice }: { practice: PracticeUnit })
         {/* Retroalimentación */}
         {feedbackText && (
           <div
-            className={`mt-4 rounded-lg border p-4 text-sm leading-relaxed ${
+            key={`${exercise.id}-${state.selected}`}
+            className={`animate-enter mt-4 rounded-lg border p-4 text-sm leading-relaxed ${
               state.solved
                 ? 'border-emerald-200 bg-emerald-50 text-emerald-900'
                 : 'border-red-200 bg-red-50 text-red-900'
@@ -269,7 +299,7 @@ export default function ExerciseRunner({ practice }: { practice: PracticeUnit })
         )}
 
         {/* Ayuda: paso a paso */}
-        <div className="mt-5 border-t border-zinc-100 pt-4">
+        <div ref={stepsRef} className="mt-5 border-t border-zinc-100 pt-4 scroll-mt-24">
           {steps === 0 ? (
             <div>
               <button
@@ -313,13 +343,22 @@ export default function ExerciseRunner({ practice }: { practice: PracticeUnit })
                 ))}
               </ol>
               {steps < exercise.steps.length ? (
-                <button
-                  type="button"
-                  onClick={revealStep}
-                  className="mt-3 flex min-h-[48px] w-full items-center justify-center gap-2 rounded-lg border border-zinc-300 bg-white px-4 text-sm font-medium text-zinc-700 transition-all hover:bg-zinc-50 active:scale-[0.98]"
-                >
-                  Mostrar siguiente paso ({steps}/{exercise.steps.length})
-                </button>
+                <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+                  <button
+                    type="button"
+                    onClick={revealStep}
+                    className="flex min-h-[48px] flex-1 items-center justify-center gap-2 rounded-lg border border-zinc-300 bg-white px-4 text-sm font-medium text-zinc-700 transition-all hover:bg-zinc-50 active:scale-[0.98]"
+                  >
+                    Siguiente paso ({steps}/{exercise.steps.length})
+                  </button>
+                  <button
+                    type="button"
+                    onClick={revealAllSteps}
+                    className="flex min-h-[48px] flex-1 items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 text-sm font-semibold text-white transition-all hover:bg-indigo-700 active:scale-[0.98]"
+                  >
+                    Ver todos los pasos
+                  </button>
+                </div>
               ) : (
                 <p className="mt-3 text-center text-xs font-medium text-emerald-700">
                   Resolución completa mostrada.
@@ -341,7 +380,15 @@ export default function ExerciseRunner({ practice }: { practice: PracticeUnit })
           ← Anterior
         </button>
 
-        {isLast ? (
+        {state.selected !== null && !state.solved && steps === 0 ? (
+          <button
+            type="button"
+            onClick={revealFromHelp}
+            className="flex min-h-[52px] w-full items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 text-base font-semibold text-white transition-all hover:bg-indigo-700 active:scale-[0.98]"
+          >
+            💡 Ver cómo se resuelve
+          </button>
+        ) : isLast ? (
           canProceed ? (
             <Link
               href="/"
@@ -375,26 +422,38 @@ export default function ExerciseRunner({ practice }: { practice: PracticeUnit })
       </div>
 
       {/* Reiniciar progreso */}
-      <footer className="mt-8 flex justify-center border-t border-zinc-200 pt-5">
-        <button
-          type="button"
-          onClick={() => {
-            if (window.confirm('¿Reiniciar el progreso de esta práctica?')) {
-              reset();
-              setAnswers((prev) => {
-                const next: Record<string, AnswerState> = {};
-                for (const ex of practice.exercises) {
-                  next[ex.id] = { selected: null, solved: false };
-                }
-                return next;
-              });
-              setStepsShown({});
-            }
-          }}
-          className="flex min-h-[44px] items-center px-2 text-xs text-zinc-400 transition-colors hover:text-zinc-600"
-        >
-          Reiniciar progreso
-        </button>
+      <footer className="mt-8 flex flex-col items-center border-t border-zinc-200 pt-5">
+        {confirmReset ? (
+          <div className="w-full max-w-sm rounded-lg border border-zinc-200 bg-white p-4 text-center shadow-sm">
+            <p className="text-sm font-medium text-zinc-800">
+              ¿Reiniciar todo? Perderás tu avance en esta práctica.
+            </p>
+            <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+              <button
+                type="button"
+                onClick={() => setConfirmReset(false)}
+                className="flex min-h-[48px] flex-1 items-center justify-center rounded-lg border border-zinc-300 bg-white px-4 text-sm font-medium text-zinc-700 transition-all hover:bg-zinc-50 active:scale-[0.98]"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={handleReset}
+                className="flex min-h-[48px] flex-1 items-center justify-center rounded-lg bg-red-600 px-4 text-sm font-semibold text-white transition-all hover:bg-red-700 active:scale-[0.98]"
+              >
+                Sí, reiniciar
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => setConfirmReset(true)}
+            className="flex min-h-[44px] items-center px-2 text-xs text-zinc-400 transition-colors hover:text-zinc-600"
+          >
+            Reiniciar progreso
+          </button>
+        )}
       </footer>
 
       {/* Drawer inferior de teoría */}
