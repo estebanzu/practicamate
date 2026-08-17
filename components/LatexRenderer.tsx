@@ -59,13 +59,19 @@ function renderLatex(latex: string, displayMode: boolean): string {
 interface LatexRendererProps {
   content: string;
   className?: string;
+  inline?: boolean;
 }
 
-export default function LatexRenderer({ content, className }: LatexRendererProps) {
+export default function LatexRenderer({ content, className, inline = false }: LatexRendererProps) {
   const segments = parseLatex(content);
 
+  const Wrapper: any = inline ? 'span' : 'div';
+  const wrapperClassName = inline
+    ? `whitespace-normal ${className ?? ''}`
+    : `w-full min-w-0 max-w-full ${className ?? ''}`;
+
   return (
-    <div className={`w-full min-w-0 max-w-full ${className ?? ''}`}>
+    <Wrapper className={wrapperClassName}>
       {segments.map((segment, i) => {
         if (segment.type === 'text') {
           const lines = segment.value.split('\n');
@@ -99,6 +105,6 @@ export default function LatexRenderer({ content, className }: LatexRendererProps
           />
         );
       })}
-    </div>
+    </Wrapper>
   );
 }

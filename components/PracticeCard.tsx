@@ -39,7 +39,9 @@ export default function PracticeCard({ practice }: PracticeCardProps) {
       </div>
 
       <div>
-        <h2 className="text-lg font-semibold leading-snug text-zinc-900">{practice.title}</h2>
+        <h2 className="text-lg font-semibold leading-snug text-zinc-900">
+          <LatexRenderer content={practice.title} inline />
+        </h2>
         <div className="mt-1.5 text-sm leading-relaxed text-zinc-600">
           <LatexRenderer content={practice.description} />
         </div>

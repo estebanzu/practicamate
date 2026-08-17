@@ -29,7 +29,9 @@ export default function TheoryView({ practice, embedded = false }: TheoryViewPro
     return (
       <div>
         <header className="border-b border-zinc-200 pb-4">
-          <h2 className="text-lg font-semibold text-zinc-900">{practice.title}</h2>
+          <h2 className="text-lg font-semibold text-zinc-900">
+            <LatexRenderer content={practice.title} inline />
+          </h2>
           <p className="mt-1 text-sm leading-relaxed text-zinc-600">
             ¿Dudas? Repasa la teoría y los ejemplos antes de responder.
           </p>
@@ -38,7 +40,9 @@ export default function TheoryView({ practice, embedded = false }: TheoryViewPro
         <div className="mt-4 space-y-5">
           {practice.theory.map((section, i) => (
             <section key={i}>
-              <h3 className="text-base font-semibold text-zinc-900">{section.title}</h3>
+              <h3 className="text-base font-semibold text-zinc-900">
+                <LatexRenderer content={section.title} inline />
+              </h3>
               <div className="mt-2 text-[15px] leading-relaxed text-zinc-700">
                 <LatexRenderer content={section.contentLatex} />
               </div>
@@ -53,9 +57,8 @@ export default function TheoryView({ practice, embedded = false }: TheoryViewPro
                       aria-expanded={open}
                       className="flex min-h-[48px] w-full items-center justify-between gap-3 rounded-lg border border-zinc-200 bg-zinc-50 px-4 text-left text-sm font-medium text-zinc-800 transition-all hover:border-zinc-300 active:scale-[0.99]"
                     >
-                      <span>{example.title}</span>
-                      <span aria-hidden="true" className="shrink-0 text-zinc-400">
-                        {open ? '−' : '+'}
+                      <span>
+                        {open ? '−' : '+'} · <LatexRenderer content={example.title} inline />
                       </span>
                     </button>
                     {open && (
@@ -100,7 +103,7 @@ export default function TheoryView({ practice, embedded = false }: TheoryViewPro
           {practice.subject} · Teoría
         </span>
         <h1 className="mt-2 text-2xl font-semibold tracking-tight text-zinc-900 sm:text-3xl">
-          {practice.title}
+          <LatexRenderer content={practice.title} inline />
         </h1>
         <p className="mt-3 text-sm leading-relaxed text-zinc-600">
           Lee con calma y revisa los ejemplos resueltos. Luego pasa a los ejercicios para ponerlo en
@@ -114,7 +117,9 @@ export default function TheoryView({ practice, embedded = false }: TheoryViewPro
             key={i}
             className="rounded-lg border border-zinc-200 bg-white p-5 shadow-sm sm:p-6"
           >
-            <h2 className="text-lg font-semibold text-zinc-900">{section.title}</h2>
+            <h2 className="text-lg font-semibold text-zinc-900">
+              <LatexRenderer content={section.title} inline />
+            </h2>
             <div className="mt-3 text-base leading-relaxed text-zinc-700">
               <LatexRenderer content={section.contentLatex} />
             </div>
@@ -136,7 +141,8 @@ export default function TheoryView({ practice, embedded = false }: TheoryViewPro
                         className="flex min-h-[52px] w-full items-center justify-between gap-3 rounded-lg border border-zinc-200 bg-zinc-50 px-4 text-left text-sm font-medium text-zinc-800 transition-all hover:border-zinc-300 active:scale-[0.99]"
                       >
                         <span>
-                          {open ? 'Ocultar' : 'Ver'} · {example.title}
+                          {open ? 'Ocultar' : 'Ver'} ·{' '}
+                          <LatexRenderer content={example.title} inline />
                         </span>
                         <span aria-hidden="true" className="shrink-0 text-zinc-400">
                           {open ? '−' : '+'}
