@@ -95,10 +95,24 @@ make dev         # http://localhost:3000
 | `make security`     | Auditoría de dependencias (`npm audit`); falla si hay vulnerabilidades      |
 | `make security-fix` | Corrige vulnerabilidades forzando actualizaciones (`npm audit fix --force`) |
 | `make dev`          | Servidor de desarrollo en `http://localhost:3000`                           |
-| `make deploy`       | Despliegue (pendiente de implementación)                                    |
+| `make deploy`       | Despliega en Vercel (producción) vía Vercel CLI; requiere `VERCEL_TOKEN`    |
 
 > **Nota:** `make security --fix-force` no es sintaxis válida de GNU Make (los argumentos con `--`
 > tras un target se interpretan como opciones de `make`). Usa `make security-fix`.
+
+### Despliegue directo con `make deploy`
+
+Alternativa al flujo GitHub → Vercel. Construye en local y sube a producción usando la CLI de
+Vercel. Necesita el token (se lee de la variable de entorno `VERCEL_TOKEN` o del archivo `.env`,
+que está en `.gitignore`):
+
+```bash
+export VERCEL_TOKEN=vcp_xxx      # o: echo "VERCEL_TOKEN=vcp_xxx" > .env
+make deploy                      # publica en https://novenomate.vercel.app
+```
+
+Cada ejecución crea un nuevo deployment de producción (si no lo sobreescribes, `.env` nunca se
+sube al repositorio).
 
 Verificación previa al commit:
 

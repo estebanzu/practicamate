@@ -33,6 +33,12 @@ security-fix:
 dev:
 	npm run dev
 
-# Despliegue (pendiente de implementación)
+# Token de Vercel: variable de entorno o archivo .env (ignorado por git)
+VERCEL_TOKEN ?= $(shell test -f .env && sed -n 's/^VERCEL_TOKEN=//p' .env | head -1)
+
+# Despliega la app en Vercel (producción). Requiere VERCEL_TOKEN:
+#   export VERCEL_TOKEN=vcp_xxx   o   echo "VERCEL_TOKEN=vcp_xxx" > .env
 deploy:
-	@echo "El target 'deploy' se implementará más adelante."
+	@test -n "$(VERCEL_TOKEN)" || { echo "ERROR: falta VERCEL_TOKEN (export VERCEL_TOKEN=... o crea .env)"; exit 1; }
+	@npx --yes vercel link --yes --project novenomate --token "$(VERCEL_TOKEN)"
+	npx --yes vercel deploy --prod --yes --token "$(VERCEL_TOKEN)"
