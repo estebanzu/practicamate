@@ -1,7 +1,10 @@
 // ============================================================================
 // Dataset de prácticas — Álgebra (Noveno Nivel)
 // Fuente: "Práctica adicional 3" — Colegio Salesiano Don Bosco (practica03.pdf)
+// "Práctica adicional 2" (practica02.pdf) en data/practica02.ts
 // ============================================================================
+
+import { practica02Units } from './practica02';
 
 export interface Step {
   stepNumber: number;
@@ -41,6 +44,8 @@ export interface PracticeUnit {
   description: string;
   theory: TheorySection[];
   exercises: Exercise[];
+  topic?: string;
+  method?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -1549,6 +1554,7 @@ export const practices: PracticeUnit[] = [
   factorizacion,
   simplificacionRacionales,
   operacionesRacionales,
+  ...practica02Units,
 ];
 
 export function getPractice(id: string): PracticeUnit | undefined {

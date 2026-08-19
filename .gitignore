@@ -12,3 +12,11 @@ npm-debug.log*
 yarn-error.log*
 .vercel
 .env*
+.tmp-p2/
+public/latex/*.aux
+public/latex/*.log
+public/latex/*.fls
+public/latex/*.fdb_latexmk
+public/latex/*.pdf
+__pycache__/
+*.pyc

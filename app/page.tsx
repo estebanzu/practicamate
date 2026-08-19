@@ -1,6 +1,7 @@
 import { practices } from '@/data/practices';
 import PracticeCatalog from '@/components/PracticeCatalog';
 import PdfDownloads from '@/components/PdfDownloads';
+import ContinueCard from '@/components/ContinueCard';
 
 export default function HomePage() {
   const totalExercises = practices.reduce((acc, p) => acc + p.exercises.length, 0);
@@ -22,6 +23,8 @@ export default function HomePage() {
           automáticamente en este dispositivo.
         </p>
       </header>
+
+      <ContinueCard practices={practices} />
 
       <section aria-label="Prácticas disponibles" className="py-6">
         <PracticeCatalog practices={practices} />

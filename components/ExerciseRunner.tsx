@@ -6,6 +6,7 @@ import type { Exercise, ExerciseOption, PracticeUnit } from '@/data/practices';
 import { usePracticeProgress } from '@/lib/progress';
 import LatexRenderer from './LatexRenderer';
 import TheoryView from './TheoryView';
+import FeedbackBox from './FeedbackBox';
 
 interface AnswerState {
   selected: string | null;
@@ -64,6 +65,20 @@ export default function ExerciseRunner({ practice }: { practice: PracticeUnit })
     [progress, practice]
   );
   const percent = total === 0 ? 0 : Math.round((solvedCount / total) * 100);
+
+  const totalAttempts = useMemo(
+    () => Object.values(progress.byExercise).reduce((acc, e) => acc + (e.attempts || 0), 0),
+    [progress]
+  );
+  const perfectCount = useMemo(
+    () =>
+      practice.exercises.filter((ex) => (progress.byExercise[ex.id]?.attempts ?? 0) === 1).length,
+    [progress, practice]
+  );
+  const retried = useMemo(
+    () => practice.exercises.filter((ex) => (progress.byExercise[ex.id]?.attempts ?? 0) > 1),
+    [progress, practice]
+  );
 
   // La opción de avanzar se habilita al responder o al revisar la solución completa.
   const canProceed = state.selected !== null || steps === exercise.steps.length;
@@ -191,39 +206,50 @@ export default function ExerciseRunner({ practice }: { practice: PracticeUnit })
       </div>
 
       {solvedCount === total && (
-        <div className="mt-4 rounded-lg border border-emerald-300 bg-emerald-50 p-4 text-sm leading-relaxed text-emerald-900">
-          🎉 ¡Completaste la práctica completa! Puedes repasar los ejercicios o consultar la teoría.
-        </div>
+        <section className="animate-enter mt-4 rounded-2xl border border-emerald-300 bg-emerald-50 p-5 text-emerald-900 shadow-sm">
+          <p className="text-base font-semibold">🎉 ¡Práctica completada!</p>
+          <p className="mt-1 text-sm leading-relaxed text-emerald-800">
+            Resolviste los {total} ejercicios en {totalAttempts} intentos.
+          </p>
+          <div className="mt-3 grid grid-cols-2 gap-2 text-center">
+            <div className="rounded-lg bg-white/70 p-3">
+              <p className="text-lg font-bold">
+                {solvedCount}/{total}
+              </p>
+              <p className="text-xs text-emerald-700">ejercicios resueltos</p>
+            </div>
+            <div className="rounded-lg bg-white/70 p-3">
+              <p className="text-lg font-bold">{perfectCount}</p>
+              <p className="text-xs text-emerald-700">al primer intento</p>
+            </div>
+          </div>
+          {retried.length > 0 ? (
+            <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+              <button
+                type="button"
+                onClick={() => {
+                  const first = retried[0];
+                  goTo(practice.exercises.findIndex((ex) => ex.id === first.id));
+                }}
+                className="flex min-h-[48px] flex-1 items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 text-sm font-semibold text-white transition-all hover:bg-indigo-700 active:scale-[0.98]"
+              >
+                Repasar los {retried.length} que fallaste
+              </button>
+              <button
+                type="button"
+                onClick={handleReset}
+                className="flex min-h-[48px] flex-1 items-center justify-center gap-2 rounded-lg border border-zinc-300 bg-white px-4 text-sm font-medium text-zinc-700 transition-all hover:bg-zinc-50 active:scale-[0.98]"
+              >
+                Reiniciar
+              </button>
+            </div>
+          ) : (
+            <p className="mt-3 text-sm font-medium text-emerald-800">
+              ¡Perfecto! Todo al primer intento. 🏆
+            </p>
+          )}
+        </section>
       )}
-
-      {/* Selector de ejercicios (scroll horizontal en móvil) */}
-      <nav
-        className="no-scrollbar -mx-4 mt-4 flex gap-2 overflow-x-auto px-4 pb-1"
-        aria-label="Selector de ejercicios"
-      >
-        {practice.exercises.map((ex, i) => {
-          const solved = progress.byExercise[ex.id]?.solved;
-          const active = i === current;
-          return (
-            <button
-              key={ex.id}
-              type="button"
-              onClick={() => goTo(i)}
-              aria-current={active ? 'true' : undefined}
-              aria-label={`Ir al ejercicio ${i + 1}${solved ? ' (resuelto)' : ''}`}
-              className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border text-sm font-semibold transition-all active:scale-95 ${
-                active
-                  ? 'border-indigo-600 bg-indigo-600 text-white'
-                  : solved
-                    ? 'border-emerald-300 bg-emerald-50 text-emerald-800 hover:border-emerald-400'
-                    : 'border-zinc-200 bg-white text-zinc-600 hover:border-zinc-400'
-              }`}
-            >
-              {i + 1}
-            </button>
-          );
-        })}
-      </nav>
 
       {/* Enunciado */}
       <article
@@ -281,21 +307,11 @@ export default function ExerciseRunner({ practice }: { practice: PracticeUnit })
 
         {/* Retroalimentación */}
         {feedbackText && (
-          <div
+          <FeedbackBox
             key={`${exercise.id}-${state.selected}`}
-            className={`animate-enter mt-4 rounded-lg border p-4 text-sm leading-relaxed ${
-              state.solved
-                ? 'border-emerald-200 bg-emerald-50 text-emerald-900'
-                : 'border-red-200 bg-red-50 text-red-900'
-            }`}
-          >
-            <LatexRenderer content={feedbackText} />
-            {!state.solved && (
-              <p className="mt-2 text-xs text-red-700/80">
-                No te preocupes: selecciona otra opción para reintentar.
-              </p>
-            )}
-          </div>
+            status={state.solved ? 'correct' : 'retry'}
+            feedback={feedbackText}
+          />
         )}
 
         {/* Ayuda: paso a paso */}
@@ -483,6 +499,37 @@ export default function ExerciseRunner({ practice }: { practice: PracticeUnit })
               </button>
             </div>
             <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
+              <div className="mb-4">
+                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-zinc-400">
+                  Ir a un ejercicio
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {practice.exercises.map((ex, i) => {
+                    const solved = progress.byExercise[ex.id]?.solved;
+                    const active = i === current;
+                    return (
+                      <button
+                        key={ex.id}
+                        type="button"
+                        onClick={() => {
+                          goTo(i);
+                          setShowTheory(false);
+                        }}
+                        aria-label={`Ir al ejercicio ${i + 1}${solved ? ' (resuelto)' : ''}`}
+                        className={`flex h-11 min-w-[44px] items-center justify-center rounded-lg border px-2 text-sm font-semibold transition-all active:scale-95 ${
+                          active
+                            ? 'border-indigo-600 bg-indigo-600 text-white'
+                            : solved
+                              ? 'border-emerald-300 bg-emerald-50 text-emerald-800 hover:border-emerald-400'
+                              : 'border-zinc-200 bg-white text-zinc-600 hover:border-zinc-400'
+                        }`}
+                      >
+                        {i + 1}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
               <TheoryView practice={practice} embedded />
             </div>
           </div>
