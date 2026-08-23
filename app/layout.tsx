@@ -3,7 +3,7 @@ import 'katex/dist/katex.min.css';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Matemática en foco — Prácticas interactivas',
+  title: 'Practica de matematicas — Prácticas interactivas',
   description:
     'Prácticas interactivas de Álgebra con teoría en LaTeX, ejemplos resueltos y resolución paso a paso.',
 };

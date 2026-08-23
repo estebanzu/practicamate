@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import type { PracticeUnit } from '@/data/practices';
 import LatexRenderer from './LatexRenderer';
+import DiagramSvg from './DiagramSvg';
 
 interface TheoryViewProps {
   practice: PracticeUnit;
@@ -46,6 +47,7 @@ export default function TheoryView({ practice, embedded = false }: TheoryViewPro
               <div className="mt-2 text-[15px] leading-relaxed text-zinc-700">
                 <LatexRenderer content={section.contentLatex} />
               </div>
+              {section.diagramSvg && <DiagramSvg svg={section.diagramSvg} />}
               {section.examples.map((example, j) => {
                 const key = `${i}-${j}`;
                 const open = !!openExamples[key];
@@ -123,6 +125,7 @@ export default function TheoryView({ practice, embedded = false }: TheoryViewPro
             <div className="mt-3 text-base leading-relaxed text-zinc-700">
               <LatexRenderer content={section.contentLatex} />
             </div>
+            {section.diagramSvg && <DiagramSvg svg={section.diagramSvg} />}
 
             {section.examples.length > 0 && (
               <div className="mt-5 border-t border-zinc-100 pt-4">

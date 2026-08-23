@@ -2,6 +2,8 @@ import { practices } from '@/data/practices';
 import PracticeCatalog from '@/components/PracticeCatalog';
 import PdfDownloads from '@/components/PdfDownloads';
 import ContinueCard from '@/components/ContinueCard';
+import SimulacroCard from '@/components/SimulacroCard';
+import RepasoCard from '@/components/RepasoCard';
 
 export default function HomePage() {
   const totalExercises = practices.reduce((acc, p) => acc + p.exercises.length, 0);
@@ -13,7 +15,7 @@ export default function HomePage() {
           Álgebra · Noveno nivel
         </p>
         <h1 className="mt-2 text-2xl font-semibold tracking-tight text-zinc-900 sm:text-3xl">
-          Matemática en foco
+          Practica de matematicas
         </h1>
         <p className="mt-3 max-w-2xl text-base leading-relaxed text-zinc-600">
           Selecciona una práctica para empezar a repasar y resolver ejercicios.
@@ -25,6 +27,10 @@ export default function HomePage() {
       </header>
 
       <ContinueCard practices={practices} />
+
+      <RepasoCard practices={practices} />
+
+      <SimulacroCard />
 
       <section aria-label="Prácticas disponibles" className="py-6">
         <PracticeCatalog practices={practices} />

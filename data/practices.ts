@@ -5,6 +5,9 @@
 // ============================================================================
 
 import { practica02Units } from './practica02';
+import { trigonometriaUnits } from './trigonometria';
+import { sumaRestaUnits } from './racionales-suma-resta';
+import { completarCuadradosUnits } from './completar-cuadrados';
 
 export interface Step {
   stepNumber: number;
@@ -23,6 +26,8 @@ export interface Exercise {
   id: string;
   title: string;
   statementLatex: string;
+  /** Diagrama SVG opcional (generado por lib/diagrams.ts). */
+  diagramSvg?: string;
   options: ExerciseOption[];
   steps: Step[];
 }
@@ -30,6 +35,8 @@ export interface Exercise {
 export interface TheorySection {
   title: string;
   contentLatex: string;
+  /** Diagrama SVG opcional (generado por lib/diagrams.ts). */
+  diagramSvg?: string;
   examples: {
     title: string;
     statementLatex: string;
@@ -1555,6 +1562,9 @@ export const practices: PracticeUnit[] = [
   simplificacionRacionales,
   operacionesRacionales,
   ...practica02Units,
+  ...trigonometriaUnits,
+  ...sumaRestaUnits,
+  ...completarCuadradosUnits,
 ];
 
 export function getPractice(id: string): PracticeUnit | undefined {

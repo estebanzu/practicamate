@@ -1,5 +1,5 @@
 # ============================================================================
-# Matemática en foco — comandos de desarrollo
+# Practica de matematicas — comandos de desarrollo
 # Ejecutar dentro de WSL:  make <target>
 # ============================================================================
 

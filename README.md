@@ -1,4 +1,4 @@
-# Matemática en foco
+# Practica de matematicas
 
 [![Next.js](https://img.shields.io/badge/Next.js-14-000000?logo=next.js&logoColor=white)](https://nextjs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
@@ -21,6 +21,13 @@ Diseño **ultra minimalista** y **mobile-first**, 100 % estático (Next.js App R
 
 - **Landing / Catálogo** (`/`): búsqueda por tema, filtro por materia, tarjetas con progreso
   personal (`3 de 10 resueltos`) y barra de avance.
+- **Simulacro de examen** (`/simulacro`): preguntas al azar de todo el banco (filtro por bloque
+  Trigonometría/Álgebra, extensión 5/10/20), temporizador de 90 s por pregunta, condiciones reales
+  (sin pistas hasta entregar), nota final y revisión paso a paso de cada pregunta.
+- **Repaso de errores** (`/repaso`): cola automática con los ejercicios fallados de todas las
+  prácticas; al responder correctamente se actualiza el progreso original y sale del repaso.
+- **Diagramas SVG**: figuras paramétricas para trigonometría (elevación, depresión, escaleras,
+  triángulos) visibles en teoría, práctica y simulacro.
 - **Teoría** (`/practica/[id]/teoria`): lectura enfocada con fórmulas KaTeX, ejemplos resueltos en
   acordeones táctiles y botón fijo inferior **"Ir a los Ejercicios →"**.
 - **Práctica interactiva** (`/practica/[id]/ejercicios`):
@@ -178,11 +185,30 @@ oficiales (base de todas las soluciones) descargables desde `public/pdfs/`:
 ## 📚 Dataset incluido
 
 Las prácticas interactivas provienen de los documentos _"Práctica adicional 2 y 3 — Noveno Nivel"_
-(Colegio Salesiano Don Bosco, Departamento de Matemática):
+(Colegio Salesiano Don Bosco, Departamento de Matemática) y de unidades creadas para la prueba
+trimestral del II periodo:
+
+**Álgebra**
 
 1. **Factorización de Polinomios** (10 ejercicios)
 2. **Simplificación de Expresiones Racionales** (9 ejercicios)
 3. **Operaciones con Expresiones Racionales** (7 ejercicios)
+4. **Factor común · Práctica 2** (12 ejercicios)
+5. **Agrupación · Práctica 2** (22 ejercicios)
+6. **Inspección · Práctica 2** (33 ejercicios)
+7. **Diferencia de cuadrados · Práctica 2** (23 ejercicios)
+8. **Métodos combinados · Práctica 2** (14 ejercicios)
+9. **Suma y Resta de Expresiones Racionales** (20 ejercicios) — `data/racionales-suma-resta.ts`
+10. **Completar Cuadrados** (20 ejercicios) — `data/completar-cuadrados.ts`
+
+**Trigonometría**
+
+11. **Ángulos de Elevación y Depresión** (20 ejercicios) — `data/trigonometria.ts`
+12. **Ley de Senos** (20 ejercicios) — `data/trigonometria.ts`
+
+Las opciones de respuesta se **mezclan aleatoriamente** en cada ejercicio
+(`ExerciseRunner.tsx`, shuffle determinista por id), así que la respuesta correcta no siempre
+aparece en la misma posición.
 
 > **Nota:** los PDFs oficiales son la **base de todas las soluciones** y están disponibles para
 > descargar. Dos expresiones del PDF 3 tenían ambigüedades de extracción (coeficiente fraccionario
