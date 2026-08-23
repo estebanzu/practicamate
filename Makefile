@@ -15,8 +15,8 @@ format:
 
 # Verifica lint, tipos y formato
 check:
-	npm run lint
 	npm run typecheck
+	npx eslint . --ignore-pattern 'out/' --ignore-pattern 'node_modules/' --format stylish
 	npm run format:check
 
 # Auditoría de seguridad de dependencias (npm audit)
@@ -25,7 +25,7 @@ security:
 
 # Corrige vulnerabilidades forzando la actualización (npm audit fix --force)
 # Nota: "make security --fix-force" no es válido en GNU Make (los flags tras el
-# target se interpretan como opciones), por eso se usa este target dedicado.
+# target se interpretan como opciones), por qué se usa este target dedicado.
 security-fix:
 	npm run security:fix
 

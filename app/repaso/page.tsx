@@ -90,15 +90,13 @@ export default function RepasoPage() {
   const estado = item ? estados[item.key] : undefined;
   const opciones = useMemo(
     () =>
-      item
-        ? shuffleOptions(item.exercise.options, `${item.practiceId}:${item.exercise.id}`)
-        : [],
+      item ? shuffleOptions(item.exercise.options, `${item.practiceId}:${item.exercise.id}`) : [],
     [item]
   );
-  const pasosVisibles = item ? pasos[item.key] ?? 0 : 0;
+  const pasosVisibles = item ? (pasos[item.key] ?? 0) : 0;
   const opcionElegida =
     item && estado?.seleccion
-      ? item.exercise.options.find((o) => o.id === estado.seleccion) ?? null
+      ? (item.exercise.options.find((o) => o.id === estado.seleccion) ?? null)
       : null;
   const feedback =
     opcionElegida && (estado?.correcto || !opcionElegida.isCorrect)
@@ -323,7 +321,11 @@ export default function RepasoPage() {
           )}
 
           {/* Navegación */}
-          <div className="mt-5 flex flex-wrap gap-1.5" role="navigation" aria-label="Ir a ejercicio">
+          <div
+            className="mt-5 flex flex-wrap gap-1.5"
+            role="navigation"
+            aria-label="Ir a ejercicio"
+          >
             {items.map((it, i) => (
               <button
                 key={it.key}
