@@ -6,7 +6,11 @@
 # Nivel mínimo de severidad para la auditoría en CI (low, moderate, high, critical)
 AUDIT_LEVEL ?= high
 
-.PHONY: install typecheck lint format-check audit build ci format check security security-fix dev deploy
+# Presupuesto máximo del JS de chunks en KB gzip (hoy ~316 KB)
+BUDGET_JS_KB ?= 400
+
+.PHONY: install typecheck lint format-check audit build ci format check security security-fix dev deploy \
+	check-routes check-links check-secrets playwright-install smoke size-budget outdated
 
 # ============================================================================
 # Targets para CI (GitHub Actions)
@@ -20,9 +24,9 @@ install:
 typecheck:
 	npm run typecheck
 
-# Lint con ESLint — paso independiente en el workflow
+# Lint con ESLint (config en eslint.config.mjs) — paso independiente
 lint:
-	npx eslint . --ignore-pattern 'out/' --ignore-pattern 'node_modules/' --format stylish
+	npx eslint .
 
 # Verifica formato Prettier sin modificar archivos — paso independiente
 format-check:
@@ -36,15 +40,66 @@ audit:
 build-verify:
 	@test -f out/index.html || { echo "ERROR: build estático no generó out/index.html"; exit 1; }
 
-# Pipeline completo de CI: instalar + verificar + auditar + compilar.
+# ----------------------------------------------------------------------------
+# Checks adicionales para sitio estático
+# ----------------------------------------------------------------------------
+
+# Cada práctica del dataset debe tener teoría y ejercicios en out/ (y sin carpetas obsoletas)
+check-routes:
+	npx --yes tsx scripts/check-routes.ts
+
+# Detecta enlaces internos rotos en los HTML de out/ (ignora enlaces externos).
+# Se pasa archivo por archivo porque el modo directorio de linkinator no crawlea.
+check-links:
+	@status=0; total=0; \
+	for f in $$(find out -name '*.html' | sort); do \
+		total=$$((total + 1)); \
+		salida=$$(npx --yes linkinator "$$f" --skip '^https?://' 2>&1) || { echo "$$salida"; echo "ERROR: enlaces rotos en $$f"; status=1; }; \
+	done; \
+	echo "Revisados $$total archivos HTML"; \
+	exit $$status
+
+# Escanea secretos (tokens, llaves) con gitleaks. Si no está instalado,
+# avisa y continúa: en CI lo aplica gitleaks/gitleaks-action en el workflow.
+check-secrets:
+	@if command -v gitleaks >/dev/null 2>&1; then \
+		gitleaks detect --no-git -v; \
+	else \
+		echo "AVISO: gitleaks no instalado; check omitido (brew install gitleaks)"; \
+	fi
+
+# Presupuesto de tamaño: falla si el JS de chunks supera BUDGET_JS_KB en gzip
+size-budget:
+	@total=$$(find out/_next/static/chunks -name '*.js' -exec gzip -c {} + | wc -c | awk '{print int($$1/1024)}'); \
+	echo "JS de chunks: $${total} KB gzip (presupuesto $(BUDGET_JS_KB) KB)"; \
+	test $$total -le $(BUDGET_JS_KB)
+
+# Instala el navegador de Playwright (idempotente, con caché)
+playwright-install:
+	npx playwright install chromium
+
+# Smoke test E2E sobre el export estático en out/
+smoke: playwright-install
+	npx playwright test
+
+# Reporte informativo de dependencias obsoletas (no bloquea)
+outdated:
+	-npm outdated
+
+# Pipeline completo de CI: instalar + verificar + auditar + compilar + checks.
 # Uso en GitHub Actions:  - run: make ci
 ci: install
+	$(MAKE) check-secrets
 	$(MAKE) typecheck
 	$(MAKE) lint
 	$(MAKE) format-check
 	$(MAKE) audit AUDIT_LEVEL=$(AUDIT_LEVEL)
 	$(MAKE) build
 	$(MAKE) build-verify
+	$(MAKE) check-routes
+	$(MAKE) check-links
+	$(MAKE) size-budget
+	$(MAKE) smoke
 
 # Compila el sitio estático en out/
 build:
@@ -57,7 +112,7 @@ format:
 # Verifica lint, tipos y formato
 check:
 	npm run typecheck
-	npx eslint . --ignore-pattern 'out/' --ignore-pattern 'node_modules/' --format stylish
+	npx eslint .
 	npm run format:check
 
 # Auditoría de seguridad de dependencias (npm audit)

@@ -20,3 +20,7 @@ public/latex/*.fdb_latexmk
 public/latex/*.pdf
 __pycache__/
 *.pyc
+
+# Playwright
+test-results/
+playwright-report/

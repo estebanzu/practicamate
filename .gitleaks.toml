@@ -1,0 +1,16 @@
+# Configuración de gitleaks para este repo.
+# Escanea solo el código fuente: los artefactos de build (.next/, out/,
+# node_modules/) contienen claves internas autogeneradas por Next.js y
+# restos de caché que generan falsos positivos.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Artefactos de build y cachés generados"
+paths = [
+  '''(^|/)\.next(/|$)''',
+  '''(^|/)out(/|$)''',
+  '''(^|/)node_modules(/|$)''',
+  '''(^|/)test-results(/|$)''',
+  '''(^|/)playwright-report(/|$)''',
+]
