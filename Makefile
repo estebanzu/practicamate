@@ -3,7 +3,48 @@
 # Ejecutar dentro de WSL:  make <target>
 # ============================================================================
 
-.PHONY: build format check security security-fix dev deploy
+# Nivel mínimo de severidad para la auditoría en CI (low, moderate, high, critical)
+AUDIT_LEVEL ?= high
+
+.PHONY: install typecheck lint format-check audit build ci format check security security-fix dev deploy
+
+# ============================================================================
+# Targets para CI (GitHub Actions)
+# ============================================================================
+
+# Instala dependencias de forma reproducible usando package-lock.json
+install:
+	npm ci
+
+# Verificación de tipos (TypeScript) — paso independiente en el workflow
+typecheck:
+	npm run typecheck
+
+# Lint con ESLint — paso independiente en el workflow
+lint:
+	npx eslint . --ignore-pattern 'out/' --ignore-pattern 'node_modules/' --format stylish
+
+# Verifica formato Prettier sin modificar archivos — paso independiente
+format-check:
+	npm run format:check
+
+# Auditoría de seguridad; falla si hay vulnerabilidades >= AUDIT_LEVEL
+audit:
+	npm audit --audit-level=$(AUDIT_LEVEL)
+
+# Verifica que el export estático generó la salida esperada en out/
+build-verify:
+	@test -f out/index.html || { echo "ERROR: build estático no generó out/index.html"; exit 1; }
+
+# Pipeline completo de CI: instalar + verificar + auditar + compilar.
+# Uso en GitHub Actions:  - run: make ci
+ci: install
+	$(MAKE) typecheck
+	$(MAKE) lint
+	$(MAKE) format-check
+	$(MAKE) audit AUDIT_LEVEL=$(AUDIT_LEVEL)
+	$(MAKE) build
+	$(MAKE) build-verify
 
 # Compila el sitio estático en out/
 build:
